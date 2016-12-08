@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {render} from 'react-dom'
 import { MyEditor } from 'components/editor'
 
-require('css/RichEditor.css')
+require('./css/RichEditor.css')
 
 class Clock extends Component {
   constructor() {
@@ -35,7 +35,7 @@ class Root extends Component {
     return (
       <div>
         <Clock />
-        <div></div>
+        <div />
         <MyEditor />
       </div>
     )

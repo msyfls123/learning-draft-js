@@ -11,17 +11,18 @@ var ROOT_PATH = path.resolve(__dirname),
     APP_PATH = path.resolve(ROOT_PATH, 'src'),
     DIST_PATH = path.resolve(ROOT_PATH, 'dist'),
     TMPL_PATH = path.resolve(APP_PATH, 'tmpl'),
-    ENTRY_LIST = ['vendor'],
+    ENTRY_LIST = ['vendor', 'draft'],
     ENTRY_PATHS = {
-      vendor: ['redux', 'react-redux', 'redux-thunk']
+      vendor: ['redux', 'react-redux', 'redux-thunk'],
+      draft: ['draft-js']
     }
 
 var files = fs.readdirSync(APP_PATH),
     entryObj = {}
 files.forEach(function(filename) {
-  if(/[\s\S]+\.js/.test(filename)) {
-    ENTRY_LIST.push( filename.match(/([\s\S]+)\.js/)[1] )
-    ENTRY_PATHS[ filename.match(/([\s\S]+)\.js/)[1] ] = path.resolve(APP_PATH, filename)
+  if(/[\s\S]+\.js$/.test(filename)) {
+    ENTRY_LIST.push( filename.match(/([\s\S]+)\.js$/)[1] )
+    ENTRY_PATHS[ filename.match(/([\s\S]+)\.js$/)[1] ] = path.resolve(APP_PATH, filename)
   }
 })
 
@@ -64,7 +65,7 @@ module.exports = {
       }
     }),
     new webpack.optimize.CommonsChunkPlugin({
-      name: ['vendor'],
+      name: ['vendor', 'draft'],
       minChunks: 2
     }),
     new CleanPlugin(['dist'], {
