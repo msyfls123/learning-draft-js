@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import {render} from 'react-dom'
 import { MyEditor } from 'components/editor'
+import LinkEditorExample from 'components/link'
+import TweetEditorExample from 'components/tweet'
 
 require('./css/RichEditor.css')
 
@@ -37,6 +39,11 @@ class Root extends Component {
         <Clock />
         <div />
         <MyEditor />
+        <div className='others'>
+          <h1> Tuorial </h1>
+          <LinkEditorExample />
+          <TweetEditorExample />
+        </div>
       </div>
     )
   }
