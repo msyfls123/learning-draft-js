@@ -1,11 +1,43 @@
-.gakki
-  margin: 5em auto
-  padding-bottom: .25em
-  width: 960px
-  border-bottom: 1px solid #ddd
+$blue=#39c
 
 .others
   margin: 0 auto
   padding: 20px
   width: 750px
   background: #eee
+.gakki
+  margin: 5em auto
+  padding-bottom: .25em
+  width: 960px
+  border-bottom: 1px solid #ddd
+
+.toolbar
+  margin-bottom: 2em
+  padding: .5em
+  border: 1px solid #eee
+  border-bottom: 3px solid $blue
+  label
+    float: right
+    color: lighten($blue, 20%)
+  button
+    margin-right: 1em
+    border: 1px solid $blue
+    outline: none
+    border-radius: 4px
+    color: #39c
+    background: #fff
+    cursor: pointer
+    &:active
+      background: $blue
+      color: #fff
+
+.public-DraftEditor-content
+  [data-contents='true']>*
+    position: relative
+    &:after
+      content: attr(data-offset-key)
+      position: absolute
+      right: 0
+      top: 2px
+      font-size: 10px
+      color: #ddd
