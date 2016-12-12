@@ -33,6 +33,45 @@ $blue=#39c
       background: $blue
       color: #fff
 
+.toc
+  position: fixed
+  display: table
+  top: 100px
+  left: 20px
+  width: 100px
+  padding: 1em
+  border: 1px solid #eee
+  li
+    width: 80px
+    line-height: 1
+    margin: 5px
+    padding: 10px
+    list-style-type: none
+    cursor: move
+    border: 1px solid #ccc
+    border-radius: 5px
+
+.gu-transit
+  opacity: .5
+.gu-mirror
+  position: fixed
+  margin: 0!important
+  text-indent: 10px
+  line-height: 36px
+  border-radius: 5px
+  opacity: 0.8
+  list-style-type: none
+  background-color: rgba(0, 0, 0, 0.2)
+  z-index: 9999 !important
+  transition: opacity .3s ease-in-out
+.gu-hide
+  display: none !important
+.gu-unselectable
+  -webkit-user-select: none !important
+  -moz-user-select: none !important
+  -ms-user-select: none !important
+  user-select: none !important
+
 .public-DraftEditor-content
   [data-contents='true']>*
     position: relative

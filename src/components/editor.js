@@ -9,6 +9,7 @@ import {Editor,
         convertToRaw,
         convertFromRaw} from 'draft-js';
 import {ColorControls, colorStyleMap} from './color'
+import Toc from './toc'
 const {hasCommandModifier} = KeyBindingUtil
 
 require('../css/editor.styl')
@@ -131,7 +132,8 @@ class MyEditor extends Component {
   }
 
   render() {
-    const editorState = this.state.editorState
+    const {editorState} = this.state
+    const tocArray = editorState.getCurrentContent().getBlocksAsArray()
     return (
       <div className='gakki'>
         <div className='toolbar'>
@@ -156,7 +158,12 @@ class MyEditor extends Component {
             ref='editor'
           />
         </div>
-        </div>
+        <Toc 
+          editorState={editorState}
+          tocArray={tocArray}
+          onChange={this.onChange}
+        />
+      </div>
     )
   }
 }
