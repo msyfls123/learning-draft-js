@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {render} from 'react-dom'
 import { MyEditor } from 'components/editor'
+import Media from 'components/media'
 import LinkEditorExample from 'components/link'
 import TweetEditorExample from 'components/tweet'
 
@@ -39,11 +40,7 @@ class Root extends Component {
         <Clock />
         <div />
         <MyEditor />
-        <div className='others'>
-          <h1> Tuorial </h1>
-          <LinkEditorExample />
-          <TweetEditorExample />
-        </div>
+        <Media />
       </div>
     )
   }
