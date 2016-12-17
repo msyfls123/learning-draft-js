@@ -11,10 +11,9 @@ var ROOT_PATH = path.resolve(__dirname),
     APP_PATH = path.resolve(ROOT_PATH, 'src'),
     DIST_PATH = path.resolve(ROOT_PATH, 'dist'),
     TMPL_PATH = path.resolve(APP_PATH, 'tmpl'),
-    ENTRY_LIST = ['vendor', 'draft'],
+    ENTRY_LIST = ['vendor'],
     ENTRY_PATHS = {
-      vendor: ['redux', 'react-redux', 'redux-thunk'],
-      draft: ['draft-js']
+      vendor: ['redux', 'react-redux', 'redux-thunk']
     }
 
 var files = fs.readdirSync(APP_PATH),
@@ -56,7 +55,9 @@ module.exports = {
   externals: {
     'react': 'React',
     'react-dom': 'ReactDOM',
-    'react-router': 'ReactRouter'
+    'react-router': 'ReactRouter',
+    'immutable': 'Immutable',
+    'draft-js': 'Draft',
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -65,7 +66,7 @@ module.exports = {
       }
     }),
     new webpack.optimize.CommonsChunkPlugin({
-      name: ['vendor', 'draft'],
+      name: ['vendor'],
       minChunks: 2
     }),
     new CleanPlugin(['dist'], {
