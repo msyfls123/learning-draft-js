@@ -5,8 +5,6 @@ import Media from 'components/media'
 import LinkEditorExample from 'components/link'
 import TweetEditorExample from 'components/tweet'
 
-require('./css/RichEditor.css')
-
 class Clock extends Component {
   constructor() {
     super();

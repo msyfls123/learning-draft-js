@@ -43,9 +43,11 @@ module.exports = {
     ]
   },
   resolve:{
-    extensions:['','.js'],
+    extensions:['', '.js', '.jsx'],
     alias:{
-      components: path.resolve(APP_PATH,'components')
+      components: path.resolve(APP_PATH,'components'),
+      utils: path.resolve(APP_PATH, 'utils'),
+      css: path.resolve(APP_PATH, 'css')
     }
   },
   babel: {
@@ -61,9 +63,9 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env':{
-        'NODE_ENV': JSON.stringify('production')
-      }
+      NODE_ENV: JSON.stringify(
+                  process.env.NODE_ENV === 'dev' ? 'dev'
+                                                 : 'production')
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: ['vendor'],
@@ -89,7 +91,14 @@ module.exports = {
       title: 'react demo',
       template: path.resolve(TMPL_PATH, 'index.html'),
       filename: 'index.html',
-      chunks: ENTRY_LIST,
+      chunks: ['vendor', 'main'],
+      inject: 'body'
+    }),
+    new HtmlwebpackPlugin({
+      title: 'dev demo',
+      template: path.resolve(TMPL_PATH, 'index.html'),
+      filename: 'dev.html',
+      chunks: ['vendor', 'dev'],
       inject: 'body'
     })
   ],
