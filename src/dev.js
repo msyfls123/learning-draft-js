@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
-import {render} from 'react-dom'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
 import App from 'components/Editor'
 import { configureStore } from './store/configureStore' 
-import { Provider } from 'react-redux'
 import { EditorState } from 'draft-js'
-import { loadData } from './actions'
+import { tryLoadList } from './actions'
 
 console.log(NODE_ENV)
 
@@ -13,13 +13,13 @@ var rootEle = document.querySelector('#app')
 const store = configureStore({
   articleData: {
     editorState: EditorState.createEmpty(),
-    key: +(new Date()),
-    keyList: [],
+    stamp_list: [],
+    titleMap: {},
     saved: false,
   },
 })
 
-store.dispatch(loadData(null))
+store.dispatch(tryLoadList())
 
 render(
   (

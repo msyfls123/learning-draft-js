@@ -4,31 +4,41 @@ import {
   ContentState,
 } from 'draft-js'
 
-export function saveToLocal(contentState, key='draft-default') {
+export function saveToLocal(contentState, stamp_id='draft-default') {
   const rawContentState = convertToRaw(contentState)
   if (localStorage) {
-    localStorage[key] = JSON.stringify(rawContentState)
+    localStorage[stamp_id] = JSON.stringify(rawContentState)
     return true
   } else {
     return false
   }
 }
 
-export function loadFromLocal(key='draft-default') {
+export function loadFromLocal(stamp_id='draft-default') {
   if (localStorage) {
-    const rawString = localStorage[key]
+    const rawString = localStorage[stamp_id]
     return rawString ? convertFromRaw(JSON.parse(rawString)) : ContentState.createFromText('')
   } else {
     return ContentState.createFrowText('')
   }
 }
 
-export function saveKeyList(keyList) {
-  localStorage['key-list'] = JSON.stringify(keyList)
+export function saveStampList(stamp_list) {
+  localStorage['stamp-list'] = JSON.stringify(stamp_list)
   return true
 }
 
-export function loadKeyList() {
-  const rawList = localStorage['key-list']
+export function loadStampList() {
+  const rawList = localStorage['stamp-list']
   return rawList ? JSON.parse(rawList) : []
+}
+
+export function saveTitleMap(titleMap) {
+  localStorage['title-map'] = JSON.stringify(titleMap)
+  return true
+} 
+
+export function loadTitleMap() {
+  const rawMap = localStorage['title-map']
+  return rawMap ? JSON.parse(rawMap) : {}
 }
