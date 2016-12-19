@@ -15,7 +15,6 @@ export function saveToLocal(contentState, key='draft-default') {
 }
 
 export function loadFromLocal(key='draft-default') {
-  console.log(key)
   if (localStorage) {
     const rawString = localStorage[key]
     return rawString ? convertFromRaw(JSON.parse(rawString)) : ContentState.createFromText('')

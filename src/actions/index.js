@@ -19,11 +19,10 @@ export function saveData(tempKey) {
   return (dispatch, getState) => {
     const state = getState().articleData.editorState
     const keyList = getState().articleData.keyList
-    const key = tempKey ? tempKey : 'draft-' + dateString()
+    const key = (tempKey !== 'new' && tempKey) ? tempKey : 'draft-' + dateString()
     const result = saveToLocal(state.getCurrentContent(), key)
 
     if (result && keyList.indexOf(key) === -1) {
-      console.log(key)
       keyList.unshift(key)
     }
 
