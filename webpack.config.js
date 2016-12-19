@@ -51,7 +51,7 @@ module.exports = {
     }
   },
   babel: {
-    presets: ['es2015','react'],
+    presets: ['es2015','react', 'stage-1'],
     plugins: ['transform-runtime']
   },
   externals: {
