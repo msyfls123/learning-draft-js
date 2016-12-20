@@ -7,7 +7,6 @@ class Toolbar extends Component {
     if (canAddLink(editorState)) {
       const entityKey = createLinkEntity()
       onChange(insertLinkEntity(editorState, entityKey))
-      console.log(1)
     }
   }
   render() {
@@ -17,6 +16,11 @@ class Toolbar extends Component {
           className='btn' 
           onClick={this.handleToggleLink}>
           Link
+        </button>
+        <button 
+          className='btn' 
+          onClick={this.props.handleLogger}>
+          Log
         </button>
       </div>
     )

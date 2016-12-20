@@ -60,7 +60,6 @@ class LinkEditor extends Component {
     const { entityKey, onConfirm } = this.props
     const { value } = this.state
     onConfirm(entityKey, value)
-    console.log(value)
   }
 
   render() {

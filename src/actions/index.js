@@ -48,10 +48,8 @@ export function saveData(tempStamp, title) {
   }
 }
 
-export function loadData(tempStamp, decorator) {
+export function loadData(stamp_id, decorator) {
   return (dispatch, getState) => {
-    const stamp_list = getState().articleData.stamp_list
-    const stamp_id = tempStamp ? tempStamp : stamp_list.shift()
     const contentState = loadFromLocal(stamp_id, decorator)
     const titleMap = loadTitleMap()
 

@@ -1,12 +1,18 @@
 import { Component } from 'react'
 import { findDOMNode } from 'react-dom'
-import { Editor, EditorState, CompositeDecorator } from 'draft-js'
+import {
+  Editor,
+  EditorState,
+  CompositeDecorator,
+  convertToRaw,
+} from 'draft-js'
 import { connect } from 'react-redux'
 import {
   saveData,
   loadData,
   updateArticle,
   trySaveTitleMap,
+  tryLoadList,
   showLinkEditor,
   keepLinkEditor,
   hideLinkEditor,
@@ -44,11 +50,15 @@ class App extends Component {
     this.decorator = new CompositeDecorator([
       LinkDecorator
     ])
+
+    this.props.tryLoadList()
+    this.props.loadData(null, this.decorator)
   }
 
   componentDidMount() {
-    this.refs.editor.focus()
+    setTimeout(() => { this.refs.editor.focus() }, 10)
   }
+
   componentWillReceiveProps(nextProps) {
     const {stamp_id, titleMap} = nextProps
     const now_id = this.props.stamp_id
@@ -63,6 +73,13 @@ class App extends Component {
       })
     }
   } 
+
+  handleLogger = () => {
+    const { editorState } = this.props
+    const content = convertToRaw(editorState.getCurrentContent())
+    console.log('Content: ', content)
+    console.log('Props: ', this.props)
+  }
 
   saveArticle = () => {
     const { saveData, stamp_id } = this.props
@@ -149,6 +166,7 @@ class App extends Component {
         <Toolbar
           editorState={editorState}
           onChange={this.onChange}
+          handleLogger={this.handleLogger}
         />
 
         <textarea
@@ -198,6 +216,7 @@ export default connect(mapStateToProps, {
   loadData,
   updateArticle,
   trySaveTitleMap,
+  tryLoadList,
   showLinkEditor,
   keepLinkEditor,
   hideLinkEditor,

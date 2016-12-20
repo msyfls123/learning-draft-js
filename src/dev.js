@@ -4,7 +4,6 @@ import { Provider } from 'react-redux'
 import App from 'components/Editor'
 import { configureStore } from './store/configureStore' 
 import { EditorState } from 'draft-js'
-import { tryLoadList } from './actions'
 
 console.log(NODE_ENV)
 
@@ -18,8 +17,6 @@ const store = configureStore({
     saved: false,
   },
 })
-
-store.dispatch(tryLoadList())
 
 render(
   (
