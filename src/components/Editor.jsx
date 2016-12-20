@@ -1,12 +1,21 @@
 import { Component } from 'react'
-import { Editor, EditorState } from 'draft-js'
+import { findDOMNode } from 'react-dom'
+import { Editor, EditorState, CompositeDecorator } from 'draft-js'
 import { connect } from 'react-redux'
 import {
   saveData,
   loadData,
   updateArticle,
   trySaveTitleMap,
+  showLinkEditor,
+  keepLinkEditor,
+  hideLinkEditor,
 } from '../actions'
+
+import Toolbar from 'components/Toolbar'
+import LinkEditor from 'components/LinkEditor'
+import createLinkDecorator from '../decorators/LinkDecorator'
+import * as LinkUtils from '../utils/LinkUtils'
 
 require('css/app.styl')
 
@@ -17,6 +26,24 @@ class App extends Component {
     this.state = {
       title: '',
     }
+
+    const LinkDecorator = createLinkDecorator({
+      showLinkEditor: this.showLinkEditor,
+      onMouseLeaveLink: (e) => {
+        const relatedTarget = e.nativeEvent.relatedTarget ||
+          e.nativeEvent.explicitOriginalTarget
+        if (
+          !relatedTarget ||
+          relatedTarget.className.indexOf('link-editor') === -1
+        ) {
+          this.props.hideLinkEditor()
+        }
+      },
+    })
+
+    this.decorator = new CompositeDecorator([
+      LinkDecorator
+    ])
   }
 
   componentDidMount() {
@@ -45,7 +72,7 @@ class App extends Component {
 
   handleSelect = (e) => {
     const stamp_id = e.target.value
-    this.props.loadData(stamp_id)
+    this.props.loadData(stamp_id, this.decorator)
   }
 
   handleTitleChange = (e) => {
@@ -62,15 +89,47 @@ class App extends Component {
     trySaveTitleMap(stamp_id, title)
   }
 
+  getInlineTipPosition(targetDOMNode) {
+    const editor = findDOMNode(this.refs.editor)
+    if (!editor) {
+       // NOTE: Anti-pattern, here it might be called before first render.
+       // Mostly caused by the buggy contentState load from local.
+       return
+    }
+    const editorRect = editor.getBoundingClientRect()
+    const targetRect = targetDOMNode.getBoundingClientRect()
+    return {
+      top: targetRect.top - editorRect.top,
+      left: targetRect.left - editorRect.left + targetRect.width/2,
+    }
+  }
+
+  showLinkEditor = (entityKey, targetDOMNode) => {
+    if (this.props.linkEditor.show) {
+      return
+    }
+    const position = this.getInlineTipPosition(targetDOMNode)
+    // Prevent being closed by clickoutside
+    setTimeout(() => {
+      this.props.showLinkEditor(position, entityKey)
+    }, 0)
+  }
+
+  handleLinkEditConfirm = (entityKey, url) => {
+    LinkUtils.updateLink(entityKey, url)
+    this.saveArticle()
+    this.props.hideLinkEditor()
+  }
+
   render() {
-    const {editorState, stamp_id, stamp_list, titleMap} = this.props
+    const {editorState, stamp_id, stamp_list, titleMap, linkEditor} = this.props
     const selectMap = stamp_list.map((d) => (
             <option value={d}>
               {titleMap[d] ? titleMap[d] : d}
             </option>
           ))
     return (
-      <div className='gakki-editor'>
+      <div id='richEditor' className='gakki-editor'>
 
         <div className='menu'>
           <select 
@@ -87,6 +146,11 @@ class App extends Component {
             onClick={this.saveArticle}>Save</button>
         </div>
 
+        <Toolbar
+          editorState={editorState}
+          onChange={this.onChange}
+        />
+
         <textarea
           className='titleEditor'
           rows='1'
@@ -96,6 +160,15 @@ class App extends Component {
           onBlur={this.handleTitleBlur}
           value={this.state.title}
         />
+
+        {linkEditor.show &&
+          <LinkEditor
+            {...linkEditor}
+            onConfirm={this.handleLinkEditConfirm}
+            hideLinkEditor={this.props.hideLinkEditor}
+            keepLinkEditor={this.props.keepLinkEditor}
+          />
+        }
 
         <Editor
           ref='editor'
@@ -109,12 +182,14 @@ class App extends Component {
 
 function mapStateToProps(state) {
   const { editorState, stamp_id, stamp_list, titleMap, saved } = state.articleData
+  const { linkEditor } = state
   return {
     editorState,
     stamp_id,
     stamp_list,
     titleMap,
     saved,
+    linkEditor,
   }
 }
 
@@ -123,4 +198,7 @@ export default connect(mapStateToProps, {
   loadData,
   updateArticle,
   trySaveTitleMap,
+  showLinkEditor,
+  keepLinkEditor,
+  hideLinkEditor,
 })(App)

@@ -91,14 +91,14 @@ module.exports = {
       title: 'react demo',
       template: path.resolve(TMPL_PATH, 'index.html'),
       filename: 'index.html',
-      chunks: ['vendor', 'main'],
+      chunks: ['vendor', 'dev'],
       inject: 'body'
     }),
     new HtmlwebpackPlugin({
       title: 'dev demo',
       template: path.resolve(TMPL_PATH, 'index.html'),
       filename: 'dev.html',
-      chunks: ['vendor', 'dev'],
+      chunks: ['vendor', 'main'],
       inject: 'body'
     })
   ],

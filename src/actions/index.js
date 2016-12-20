@@ -4,6 +4,8 @@ import {
   UPDATE_ARTICLE,
   LOAD_LIST,
   UPDATE_TITLE,
+  SHOW_LINK_EDITOR,
+  HIDE_LINK_EDITOR,
 } from '../constants/ActionTypes'
 import { EditorState } from 'draft-js'
 import { 
@@ -46,17 +48,16 @@ export function saveData(tempStamp, title) {
   }
 }
 
-export function loadData(tempStamp) {
+export function loadData(tempStamp, decorator) {
   return (dispatch, getState) => {
     const stamp_list = getState().articleData.stamp_list
     const stamp_id = tempStamp ? tempStamp : stamp_list.shift()
-    const contentState = loadFromLocal(stamp_id)
+    const contentState = loadFromLocal(stamp_id, decorator)
     const titleMap = loadTitleMap()
 
-    const editorState = EditorState.push(
-      getState().articleData.editorState,
+    const editorState = EditorState.createWithContent(
       contentState,
-      'load-from-local'
+      decorator,
     )
 
     return dispatch({
@@ -96,5 +97,39 @@ export function updateArticle(editorState) {
   return {
     type: UPDATE_ARTICLE,
     editorState
+  }
+}
+
+// link-editor
+let hideTimerID = null
+
+export function showLinkEditor(position, entityKey) {
+  clearTimeout(hideTimerID)
+  hideTimerID = null
+  return {
+    type: SHOW_LINK_EDITOR,
+    position,
+    entityKey,
+  }
+}
+
+export function keepLinkEditor(newEntityKey) {
+  return function(_, getState) {
+    const { entityKey } = getState().linkEditor
+    if (entityKey === newEntityKey) {
+      clearTimeout(hideTimerID)
+      hideTimerID = null
+    }
+  }
+}
+
+export function hideLinkEditor() {
+  return function(dispatch) {
+    hideTimerID = setTimeout(function() {
+      dispatch({
+        type: HIDE_LINK_EDITOR,
+      })
+      hideTimerID = null
+    }, 100)
   }
 }

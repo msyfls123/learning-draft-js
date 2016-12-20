@@ -1,0 +1,6 @@
+export const ENTITY_TYPE = {
+  LINK: 'LINK',
+  FIGURE: 'FIGURE',
+  PAGEBREAK: 'PAGEBREAK',
+  FOOTNOTE: 'FOOTNOTE',
+}
