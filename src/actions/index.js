@@ -6,6 +6,7 @@ import {
   UPDATE_TITLE,
   SHOW_LINK_EDITOR,
   HIDE_LINK_EDITOR,
+  TOGGLE_SUBEDITOR,
 } from '../constants/ActionTypes'
 import { EditorState } from 'draft-js'
 import { 
@@ -129,5 +130,13 @@ export function hideLinkEditor() {
       })
       hideTimerID = null
     }, 100)
+  }
+}
+
+// subEditor
+export function toggleSubEditor(toActive) {
+  return {
+    type: TOGGLE_SUBEDITOR,
+    toActive,
   }
 }

@@ -2,6 +2,7 @@ import { Component } from 'react'
 import { findDOMNode } from 'react-dom'
 import {
   Editor,
+  Entity,
   EditorState,
   CompositeDecorator,
   convertToRaw,
@@ -16,12 +17,15 @@ import {
   showLinkEditor,
   keepLinkEditor,
   hideLinkEditor,
+  toggleSubEditor,
 } from '../actions'
 
 import Toolbar from 'components/Toolbar'
 import LinkEditor from 'components/LinkEditor'
 import createLinkDecorator from '../decorators/LinkDecorator'
 import * as LinkUtils from '../utils/LinkUtils'
+import * as SelectionUtils from '../utils/SelectionUtils'
+import Media from './Media'
 
 require('css/app.styl')
 
@@ -73,6 +77,45 @@ class App extends Component {
       })
     }
   } 
+
+  blockRenderer = (contentBlock) => {
+    const type = contentBlock.getType()
+    if (type === 'atomic') {
+      return {
+        component: Media,
+        editable: false,
+        props: {
+          updateEntity: this.updateEntity,
+          onFocus: this.onSubEditorFocus,
+          onBlur: this.onSubEditorBlur,
+        }
+      }
+    }
+  }
+
+  onSubEditorFocus = (block) => {
+    setTimeout(() => {
+      const { editorState } = this.props
+      this.props.toggleSubEditor(true)
+      this.onChange(
+        SelectionUtils.forceSelectionWithoutFocus(editorState, block)
+      )
+    }, 0)
+  }
+
+  onSubEditorBlur = () => {
+    this.props.toggleSubEditor(false)
+    this.focusEditor()
+  }
+
+  focusEditor = () => {
+    setTimeout(() => { this.refs.editor.focus }, 0)
+  }
+
+  updateEntity = (entityKey, data) => {
+    Entity.mergeData(entityKey, data)
+    this.saveArticle()
+  }
 
   handleLogger = () => {
     const { editorState } = this.props
@@ -139,7 +182,7 @@ class App extends Component {
   }
 
   render() {
-    const {editorState, stamp_id, stamp_list, titleMap, linkEditor} = this.props
+    const {editorState, stamp_id, stamp_list, titleMap, linkEditor, readOnly} = this.props
     const selectMap = stamp_list.map((d) => (
             <option value={d}>
               {titleMap[d] ? titleMap[d] : d}
@@ -190,8 +233,10 @@ class App extends Component {
 
         <Editor
           ref='editor'
+          blockRendererFn={this.blockRenderer}
           editorState={editorState}
           onChange={this.onChange}
+          readOnly={readOnly}
         />
       </div>
     )
@@ -203,6 +248,7 @@ function mapStateToProps(state) {
   const { linkEditor } = state
   return {
     editorState,
+    readOnly: state.subEditor.actived,
     stamp_id,
     stamp_list,
     titleMap,
@@ -220,4 +266,5 @@ export default connect(mapStateToProps, {
   showLinkEditor,
   keepLinkEditor,
   hideLinkEditor,
+  toggleSubEditor,
 })(App)

@@ -1,6 +1,10 @@
 export const ENTITY_TYPE = {
   LINK: 'LINK',
-  FIGURE: 'FIGURE',
-  PAGEBREAK: 'PAGEBREAK',
-  FOOTNOTE: 'FOOTNOTE',
+  MEDIA: 'MEDIA',
+}
+
+export const MEDIA_TYPE = {
+  IMAGE: 'image',
+  AUDIO: 'audio',
+  VIDOE: 'video',
 }
