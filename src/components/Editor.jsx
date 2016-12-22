@@ -25,7 +25,7 @@ import LinkEditor from 'components/LinkEditor'
 import createLinkDecorator from '../decorators/LinkDecorator'
 import * as LinkUtils from '../utils/LinkUtils'
 import * as SelectionUtils from '../utils/SelectionUtils'
-import Media from './Media'
+import getMediaRenderer from '../decorators/getMediaRenderer'
 
 require('css/app.styl')
 
@@ -81,17 +81,17 @@ class App extends Component {
   blockRenderer = (contentBlock) => {
     const type = contentBlock.getType()
     if (type === 'atomic') {
-      return {
-        component: Media,
-        editable: false,
-        props: {
-          updateEntity: this.updateEntity,
-          onFocus: this.onSubEditorFocus,
-          onBlur: this.onSubEditorBlur,
-        }
-      }
+      return getMediaRenderer(
+        this.getEditorState,
+        this.onChange,
+        this.updateEntity,
+        this.onSubEditorFocus,
+        this.onSubEditorBlur,
+      )
     }
   }
+
+  getEditorState = () => this.props.editorState
 
   onSubEditorFocus = (block) => {
     setTimeout(() => {

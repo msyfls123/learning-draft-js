@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
-import { Entity } from 'draft-js'
+import { EditorState, Entity } from 'draft-js'
 import { MEDIA_TYPE } from '../constants/Draft'
+import Keys from '../constants/Keys'
+import ClickOutside from './ClickOutside'
 
 const MediaMap = {
   audio: (props) => {
@@ -25,8 +27,29 @@ class Media extends Component {
     const { type, url } = data
     this.state = {
       editingMode: false,
+      focus: false,
       type,
       url,
+    }
+  }
+
+  componentWillMount = () => {
+    document.addEventListener(
+      'keydown',
+      this.handleKeyOnFigure,
+      false
+    )
+  }
+
+  componentWillUnmount = () => {
+    document.removeEventListener(
+      'keydown',
+      this.handleKeyOnFigure,
+      false
+    )
+
+    if (this.state.editingMode) {
+      this._finishEdit()
     }
   }
 
@@ -42,8 +65,50 @@ class Media extends Component {
     })
   }
 
-  toggleEditMode = () => {
-    this.props.blockProps.onFocus(this.props.block)
+  componentDidUpdate(prevProps) {
+    if (this.props.selection !== prevProps.selection && !this.state.editingMode) {
+      this.updateSelection(this.props.selection)
+    }
+  }
+
+  updateSelection(selectionState) {
+    if (!isSelectionInBlock(selectionState, this.props.block)) {
+      return
+    }
+    setTimeout(() => {
+      this.handleFocus()
+    }, 0)
+  }
+
+  _remove = () => {
+     const blockKey = this.props.block.getKey()
+     this.props.blockProps.onRemove(blockKey)
+  }
+
+  _finishEdit = () => {
+    if (!this.state.editingMode) { return }
+    this.handleBlur()
+    this.props.blockProps.onFinish()
+    this.setState({
+      editingMode: false
+    })
+  }
+
+  handleFocus = () => {
+    this.setState({
+      focus: true
+    })
+  }
+
+  handleBlur = () => {
+    this.setState({
+      focus: false
+    })
+  }
+
+  _startEdit = () => {
+    if(this.state.editingMode) { return }
+    this.props.blockProps.onStart(this.props.block)
     this.setState({
       editingMode: true
     })
@@ -63,25 +128,58 @@ class Media extends Component {
     })
   }
 
+  handleKeyOnFigure = (e) => {
+    if (!this.state.focus) { return }
+    const keyCode = e.keyCode
+    const blockKey = this.props.block.getKey()
+
+    switch (keyCode) {
+      case Keys.BACKSPACE:
+      case Keys.DELETE:
+        e.preventDefault()
+        this._remove()
+        break
+     case Keys.UP:
+     case Keys.LEFT:
+       this.props.blockProps.onArrow(blockKey, 'up')
+       this._finishEdit()
+       break
+     case Keys.DOWN:
+     case Keys.RIGHT:
+       this.props.blockProps.onArrow(blockKey, 'down')
+       this._finishEdit()
+       break
+     case Keys.RETURN:
+       this._finishEdit()
+       break
+     }
+  }
+
+  handleClickOutside = (e) => {
+    if (!this.state.editingMode) { return }
+    if (!document.querySelector('.DraftEditor-root').contains(e.target)) { return }
+    this._finishEdit()
+    setTimeout(function() {
+      triggerSelectEvent(e)
+    }, 0)
+  }
+
   handleConfirm = () => {
     const { block, blockProps } = this.props
     const entityKey = block.getEntityAt(0)
-    const { updateEntity, onBlur } = blockProps
+    const { updateEntity } = blockProps
     const { type, url } = this.state
-    this.setState({
-      editingMode: false
-    })
     updateEntity(entityKey, {
       type,
       url,
     })
-    onBlur()
+    this._finishEdit()
   }
 
   renderDisplayMode = (type, url) => {
     return [
       <p 
-        className='media-info' onClick={this.toggleEditMode}>
+        className='media-info' onClick={this._startEdit}>
         <span className='type'><em>{type}</em></span>
         <span className='url'><em>{url}</em></span>
       </p>
@@ -113,18 +211,43 @@ class Media extends Component {
 
   render() {
     const { block, blockProps } = this.props
-    const { type, url, editingMode } = this.state
+    const { type, url, editingMode, focus } = this.state
 
     return (
-      <div 
-        className='custom-media'>
-        { MediaMap[type]({url}) }
-        { editingMode ? this.renderEditMode(type, url)
-                      : this.renderDisplayMode(type, url)
-        }
-      </div>
+      <ClickOutside onClickOutside={this.handleClickOutside}>
+        <div 
+          className={'custom-media' + (focus ? ' isFocus' : '')}
+        >
+          <ClickOutside onClickOutside={this.handleBlur}>
+            <div onClick={this.handleFocus}>
+              { MediaMap[type]({url}) }
+            </div>
+          </ClickOutside>
+          { editingMode ? this.renderEditMode(type, url)
+                        : this.renderDisplayMode(type, url)
+          }
+        </div>
+      </ClickOutside>
     )
   }
+}
+
+function isSelectionInBlock(selection, block) {
+  const key = block.getKey()
+  return selection.getAnchorKey() === key &&
+      selection.getFocusKey() === key
+}
+
+function triggerSelectEvent(e) {
+  const event = new MouseEvent('mouseup', {
+    view: window,
+    bubbles: true,
+    cancelable: true,
+    clientX: e.clientX,
+    clientY: e.clientY,
+  })
+  e.target.dispatchEvent(event)
+  document.querySelector('.public-DraftEditor-content').dispatchEvent(event)
 }
 
 export default Media
