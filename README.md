@@ -2,7 +2,7 @@
 demo for learning draft-js
 
 ## Live
-[https://masy.site/editor](https://masy.site/editor)
+[https://edit.ebichu.cc/](https://edit.ebichu.cc/)
 
 ## FEATURE
 + [x] Link
